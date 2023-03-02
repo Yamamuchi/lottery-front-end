@@ -22,7 +22,7 @@ export default function Home() {
   const mounted = useIsMounted();
   const { isConnected } = useAccount();
 
-  const contractAddress = "0x023A5eEa97b849131cA52e24C7C7b0C0388DB47B"
+  const contractAddress = "0x3cE83C1A95e732118ab7F7c434654Fc7677E46aa"
 
   const { data: entranceFee } = useContractRead({
     address: contractAddress,
@@ -31,11 +31,10 @@ export default function Home() {
     watch: true
   })
 
-  const { data: players } = useContractRead({
+  const { data: currentPlayers } = useContractRead({
     address: contractAddress,
     abi: contractABI,
-    functionName: "players(uint256)",
-    args: [0],
+    functionName: "currentPlayers",
     watch: true
   })
 
@@ -50,7 +49,7 @@ export default function Home() {
     address: contractAddress,
     abi: contractABI,
     functionName: 'enter',
-    args: [{ value: '30560308814929110' }]
+    args: [{ value: entranceFee?.toString() }]
   });
   const { data: txData, isLoading: loading, isSuccess: success, write } = useContractWrite(config);
 
@@ -63,10 +62,9 @@ export default function Home() {
       <ConnectButton />
       <p>Welcome to Smart Contract Lottery</p>
       {mounted && isConnected ? <p>Current entrance fee (wei): {entranceFee?.toString()}</p> : <p>No data to display</p>}
-      {mounted && isConnected ? <p>Current players: {players?.toString()}</p> : <p>No players to display</p>}
+      {mounted && isConnected ? <p>Current players: {currentPlayers?.toString()}</p> : <p>No players to display</p>}
       {mounted && isConnected ? <p>Recent Winner: {recentWinner?.toString()}</p> : <p>No winners to display</p>}
-      {mounted && isConnected ? <button disabled={!write} onClick={() => write?.({ overrides: { value: entranceFee?.toString() } })}>Enter Lottery!</button> : <p>No button</p>}
-      {mounted && isConnected ? <p>Loading status: {loading?.toString()}, Success status: {success?.toString()}</p> : <p>No data to display</p>}
+      {mounted && isConnected ? <button class={styles.button} disabled={!write} onClick={() => write?.({ overrides: { value: entranceFee?.toString() } })}>Enter Lottery!</button> : <p>No button</p>}
       {isSuccess && (
         <div>
           Successful!
@@ -78,24 +76,3 @@ export default function Home() {
     </>
   )
 }
-// {
-//   recklesslySetUnpreparedOverrides: {
-//     from: "0x2f234115D60FaF78e6f96c182B2D1879EBa8F5A5",
-//     value: BigNumber.from('30172927223740820'),
-//   },
-// }
-
-    // args: [{ value: '30406549789357290' }]
-    // overrides: {
-    //   from: "0x2f234115D60FaF78e6f96c182B2D1879EBa8F5A5",
-    //   value: BigNumber.from('30406549789357290'),
-    // },
-
-      // const onEnterClick = async () => {
-  //   try {
-  //     await writeAsync?.()
-  //   }
-  //   catch (error) {
-  //     console.error(error)
-  //   }
-  // }
